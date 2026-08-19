@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # The engines range this scaffold and everything it generates declare.
+        node: ['22.19', '24']
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Structural checks: no network, so a registry outage cannot fail them.
+      - name: Test generated project structure
+        run: npm test
+
+      # The same tests plus a real install and tsc build of every template,
+      # which is the only thing that proves a generated project compiles.
+      - name: Build every generated template
+        run: npm test
+        env:
+          SMOKE_BUILD: '1'

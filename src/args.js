@@ -1,0 +1,65 @@
+// Argument parsing and help text. Uses node:util's parseArgs — no dependency.
+import { parseArgs } from 'node:util'
+import { c, paint } from './util.js'
+import { TEMPLATES, TEMPLATE_META } from './templates.js'
+
+const OPTIONS = {
+  template: { type: 'string', short: 't' },
+  name: { type: 'string', short: 'n' },
+  'plugin-id': { type: 'string' },
+  'tool-name': { type: 'string' },
+  yes: { type: 'boolean', short: 'y' },
+  verify: { type: 'boolean' },
+  'skip-install': { type: 'boolean' },
+  help: { type: 'boolean', short: 'h' },
+  version: { type: 'boolean', short: 'v' },
+}
+
+/**
+ * Parse argv into a target directory and flags.
+ * @param argv - arguments after the node binary and script.
+ * @returns `{ targetDir, flags }`; `targetDir` is null when none was given.
+ */
+export function parseCliArgs(argv) {
+  const { values, positionals } = parseArgs({
+    args: argv,
+    options: OPTIONS,
+    allowPositionals: true,
+    strict: false,
+  })
+  return { targetDir: positionals[0] ?? null, flags: values }
+}
+
+const templateLines = TEMPLATES
+  .map((id) => `      ${id.padEnd(9)} ${TEMPLATE_META[id].description}`)
+  .join('\n')
+
+export const HELP = `
+${paint(c.bold, 'create-deepseek-harness-plugin')} — scaffold a DeepSeek Harness plugin
+
+${paint(c.cyan, 'Usage')}
+  npx create-deepseek-harness-plugin@latest [project-dir] [options]
+  npm create deepseek-harness-plugin@latest -- [project-dir] [options]
+
+${paint(c.cyan, 'Arguments')}
+  [project-dir]            Target directory. Omit it to answer the prompts instead.
+
+${paint(c.cyan, 'Templates')}
+${templateLines}
+
+${paint(c.cyan, 'Options')}
+  -t, --template <name>    One of: ${TEMPLATES.join(' | ')}
+  -n, --name <pkg>         npm package name (default: derived from the directory)
+      --plugin-id <id>     cordis row id and plugin name export (default: derived)
+      --tool-name <name>   Model-facing tool name, tool template only (default: derived)
+  -y, --yes                Accept every default and skip the prompts
+      --verify             After generating: install, build, mount, and BOOT it in a temp profile
+      --skip-install       Leave dependencies uninstalled
+  -h, --help               Show this help
+  -v, --version            Print the scaffold version
+
+${paint(c.cyan, 'Examples')}
+  npx create-deepseek-harness-plugin@latest hello-world -t basic
+  npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
+  npx create-deepseek-harness-plugin@latest
+`

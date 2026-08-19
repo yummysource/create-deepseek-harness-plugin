@@ -1,0 +1,26 @@
+# The {{PKG_NAME}} bundle layer: an app that owns its own command-line flags.
+#
+# Two rows, and the pairing is the point:
+#
+#   1. the startup row injects `cmdlineArgs`, parses THIS app's flags, and
+#      publishes what it resolved as an ordinary service;
+#   2. the app row injects that service and reads it from a `!!js` expression,
+#      with the deployment value written beside it as the fallback.
+#
+# A flag therefore beats the value configured here, without the launcher
+# knowing any of this app's flags. Note that this precedence needs the
+# expression to survive: a user patch replacing the whole `config` with
+# literals removes the runtime read.
+#
+# On `--help` the startup plugin never publishes its service, so the app row
+# stays inactive and nothing boots.
+
+- insert:
+    - id: {{PLUGIN_ID}}-startup
+      name: {{PKG_NAME}}/startup
+
+    - id: {{PLUGIN_ID}}
+      name: {{PKG_NAME}}
+      inject: [{{PLUGIN_ID_CAMEL}}Startup]
+      config:
+        greeting: !!js ctx.{{PLUGIN_ID_CAMEL}}Startup.greeting ?? 'Hello, World!'

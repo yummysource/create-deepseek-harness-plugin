@@ -1,0 +1,43 @@
+{
+  "name": "create-deepseek-harness-plugin",
+  "version": "0.1.0",
+  "description": "Scaffold a DeepSeek Harness (DSH) plugin \u2014 basic / tool / service / app / events / webui templates, version pinning aligned to your installed dsh, and a --verify that actually boots the plugin.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yummysource/create-deepseek-harness-plugin.git"
+  },
+  "homepage": "https://github.com/yummysource/create-deepseek-harness-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/yummysource/create-deepseek-harness-plugin/issues"
+  },
+  "type": "module",
+  "bin": {
+    "create-deepseek-harness-plugin": "./src/cli.js"
+  },
+  "files": [
+    "src",
+    "templates",
+    "README.md",
+    "README.zh-TW.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "plugin",
+    "cordis",
+    "scaffold",
+    "create-deepseek-harness-plugin"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "test:verify": "DSH_SMOKE_VERIFY=1 node --test"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

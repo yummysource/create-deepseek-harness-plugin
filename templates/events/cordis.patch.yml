@@ -1,0 +1,8 @@
+# The {{PKG_NAME}} bundle layer.
+#
+# This plugin only listens, so it needs no service injection and can mount
+# anywhere in the composition. Its listeners attach to the whole tree.
+
+- insert:
+    - id: {{PLUGIN_ID}}
+      name: {{PKG_NAME}}

@@ -1,0 +1,46 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Required for npm provenance: the signed attestation linking the
+      # published tarball to this workflow run and this commit.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      # A release tagged v0.2.0 that ships package.json 0.1.0 would publish the
+      # wrong version under the right name, and npm versions are immutable.
+      # Refuse before anything reaches the registry.
+      - name: Check the tag matches package.json
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "release tag '$TAG' does not match package.json version '$PKG'" >&2
+            exit 1
+          fi
+          echo "publishing version $PKG"
+
+      - name: Test
+        run: npm test
+        env:
+          SMOKE_BUILD: '1'
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

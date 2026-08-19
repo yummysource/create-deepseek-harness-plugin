@@ -1,0 +1,10 @@
+# The {{PKG_NAME}} bundle layer.
+#
+# Only the PROVIDER is a loadable row. The Service Definition in `.` is an
+# abstract class that says WHAT the capability does; it is imported for types
+# and subclassed, never mounted. Loading the provider is what publishes
+# `ctx.{{PLUGIN_ID}}` for other plugins to inject.
+
+- insert:
+    - id: {{PLUGIN_ID}}
+      name: {{PKG_NAME}}/local

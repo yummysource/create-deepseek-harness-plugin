@@ -1,0 +1,14 @@
+# The {{PKG_NAME}} bundle layer, applied when a profile lists this bundle in
+# dsh.profile.bundles.
+#
+# `name` is the PACKAGE name, resolved through node_modules — not a path.
+# The row id is prefixed because layers override each other BY ID: a generic
+# id would silently clobber another bundle's row.
+#
+# No `config` block, so the schema's defaults apply. A patch REPLACES a row's
+# whole config rather than merging keys, so any layer overriding this row must
+# restate every key it needs.
+
+- insert:
+    - id: {{PLUGIN_ID}}
+      name: {{PKG_NAME}}
