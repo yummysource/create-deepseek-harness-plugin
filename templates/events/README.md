@@ -95,9 +95,14 @@ plugin leaks nothing.
 
 ## Dependencies pinned
 
-Every `@deepseek-ai/*` package sits in `devDependencies` — build-time types only; at runtime the
-plugin binds to the copies inside the running harness. Here they are *purely* types: every import
-except the schema builder is an `import type`, erased at compile time.
+Every `@deepseek-ai/*` package sits in `devDependencies`, and they pin a version **line**
+rather than one build.
+
+A consumer never installs devDependencies, so once this plugin is installed somewhere it
+resolves them through `$DSH_HOME/profiles/node_modules` and binds to that harness's own
+copies. While you develop here it works the other way round: this project's `node_modules`
+is on the resolution path and wins, so the local copy is what runs — which is why it must
+install completely, peers and all.
 
 - `@deepseek-ai/dsh-session`: `{{DSH_SESSION_VERSION}}` (`Session`, `SessionEvent`)
 - `@deepseek-ai/dsh-tools`: `{{DSH_TOOLS_VERSION}}` (`ToolExecution`, `PreToolDecision`)

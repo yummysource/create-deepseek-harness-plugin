@@ -24,9 +24,9 @@ npx create-deepseek-harness-plugin@latest hello-world -t basic
 
 ## 它替你避開的坑
 
-**版本對齊你實際在跑的 harness。** 插件在執行期綁定的是你已安裝的 dsh 裡那幾份副本，所以編譯時用的型別必須是同一條版本線。這個工具會讀 `dsh --version` 並鎖定它回報的版本，全程不連網——去問 npm 反而會重新踩進它要防的坑：`@deepseek-ai/dsh-tools` 的 `latest` dist-tag 是過期的 `0.0.1-rc.1`。
+**版本對齊你實際在跑的 harness。** 已安裝的插件在執行期綁定的是你 dsh 裡那幾份副本，所以編譯時用的型別必須是同一條版本線。這個工具會讀 `dsh --version` 並鎖定它回報的那條線，全程不連網——去問 npm 反而會重新踩進它要防的坑：`@deepseek-ai/dsh-tools` 的 `latest` dist-tag 是過期的 `0.0.1-rc.1`。
 
-**相依放在該放的位置。** 所有 `@deepseek-ai/*` 一律放 `devDependencies`：它們只是編譯期型別，執行期插件會經由 `$DSH_HOME/profiles/node_modules` 解析到 harness 自己那份。宣告成真正的相依會讓 profile 裝進第二份副本——對純函式無害，對任何身分敏感的東西（Schema 實例、需要 `instanceof` 的 service 類別）則致命。
+**相依放在該放的位置。** 所有 `@deepseek-ai/*` 一律放 `devDependencies`。使用者安裝時不會裝這些，所以已安裝的插件會經由 `$DSH_HOME/profiles/node_modules` 解析、綁定到 harness 自己那份；宣告成真正的相依則會連第二份副本一起出貨。本地開發時剛好相反——專案自己的 `node_modules` 會贏得解析——所以那些套件鎖的是版本**線**，而且它們的 peer 要正常安裝。餓著它們的話，插件編譯完全正常，然後每次啟動都失敗。
 
 **`--verify` 會真的啟動插件，不只檢查設定。** `--dump-config` 只證明設定層組合成功；一個 dump 得漂漂亮亮的 profile 照樣可能每次啟動都失敗，因為 Node 根本解析不到那個模組。所以最後一步會啟動真實 profile，等到看見插件套用為止。
 

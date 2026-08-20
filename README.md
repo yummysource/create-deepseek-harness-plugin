@@ -25,17 +25,18 @@ anyone needs after "make it run".
 
 ## What it gets right for you
 
-**Versions match the harness you actually run.** A plugin binds at runtime to the copies inside
-your installed dsh, so the types it compiles against must be that same version line. The scaffold
-reads `dsh --version` and pins what it reports. Nothing is fetched over the network — asking npm
-would reintroduce the trap this exists to avoid, since `@deepseek-ai/dsh-tools`'s `latest`
-dist-tag is a stale `0.0.1-rc.1`.
+**Versions match the harness you actually run.** An installed plugin binds at runtime to the
+copies inside your dsh, so the types it compiles against must be that same version line. The
+scaffold reads `dsh --version` and pins the line it reports. Nothing is fetched over the network —
+asking npm would reintroduce the trap this exists to avoid, since `@deepseek-ai/dsh-tools`'s
+`latest` dist-tag is a stale `0.0.1-rc.1`.
 
 **Dependencies land where they belong.** Every `@deepseek-ai/*` package goes in
-`devDependencies`: they are build-time types, and at runtime the plugin resolves through
-`$DSH_HOME/profiles/node_modules` to the harness's own copies. Declaring them as real
-dependencies installs a second copy — harmless for a pure helper, fatal for anything
-identity-sensitive.
+`devDependencies`. A consumer never installs those, so an installed plugin resolves them through
+`$DSH_HOME/profiles/node_modules` and binds to the harness's own copies; declaring them as real
+dependencies would ship a second copy instead. Locally it is the reverse — your project's
+`node_modules` wins the resolution — so those packages pin a version *line* and their peers
+install normally. Starve them and the plugin compiles cleanly and then fails every boot.
 
 **`--verify` boots the plugin, not just the config.** `--dump-config` proves only that the
 configuration layer composed; a profile that dumps perfectly can still fail every boot because

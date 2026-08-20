@@ -89,11 +89,12 @@ session 與工具事件要等真的有工作在跑才會觸發，所以要下一
 
 ## 相依鎖定
 
-所有 `@deepseek-ai/*` 套件都放在 `devDependencies`，因為它們**只是編譯期型別**：執行期插件綁定的是
-它所安裝進去的那個 harness 裡的副本，經由 `$DSH_HOME/profiles/node_modules` 解析。宣告成真正的相依
-會讓 profile 裝進第二份副本。
+所有 `@deepseek-ai/*` 套件都放在 `devDependencies`，而且鎖的是版本**線**、不是某一次建置。
 
-此處更是純粹的型別：除了 schema 建構器之外，每個 import 都是 `import type`，編譯期就被擦除。
+使用者安裝時不會裝 devDependencies，所以這個插件被裝到別處之後，會經由
+`$DSH_HOME/profiles/node_modules` 解析、綁定到那個 harness 自己的副本。但你在這裡開發時剛好相反：
+本專案的 `node_modules` 就在解析路徑上而且會勝出，實際執行的是本地那份——所以它必須完整安裝，
+連 peer 一起。
 
 - `@deepseek-ai/dsh-session`：`{{DSH_SESSION_VERSION}}`（`Session`、`SessionEvent`）
 - `@deepseek-ai/dsh-tools`：`{{DSH_TOOLS_VERSION}}`（`ToolExecution`、`PreToolDecision`）

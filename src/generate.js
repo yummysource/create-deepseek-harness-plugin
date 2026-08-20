@@ -5,12 +5,6 @@ import { basename, dirname, join, relative, resolve } from 'node:path'
 import { c, paint, ok, warn, exists, writeFileDeep, readText, resolveDshVersions } from './util.js'
 import { TEMPLATE_META, PITFALLS } from './templates.js'
 
-// npm strips dotfiles such as .npmrc from every published tarball, so the
-// templates store them undotted and the name is restored on write. Without
-// this the file would exist when developing the scaffold and silently vanish
-// for anyone installing it from the registry.
-const DOTFILES = { npmrc: '.npmrc', gitignore: '.gitignore' }
-
 // Each template carries both READMEs; the project keeps one, named README.md.
 const READMES = { 'README.md': 'en', 'README.zh.md': 'zh' }
 
@@ -23,8 +17,7 @@ function outputPath(rel, lang) {
   const name = basename(rel)
   const readmeLang = READMES[name]
   if (readmeLang) return readmeLang === lang ? join(dirname(rel), 'README.md') : null
-  const dotted = DOTFILES[name]
-  return dotted ? join(dirname(rel), dotted) : rel
+  return rel
 }
 
 const here = dirname(fileURLToPath(import.meta.url))

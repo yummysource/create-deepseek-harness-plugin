@@ -30,10 +30,7 @@ for (const template of TEMPLATES) {
   test(`${template}: generates a loadable bundle`, () => {
     const { dir, target } = scaffold(template)
     try {
-      // .npmrc is listed here deliberately: npm strips dotfiles from published
-      // tarballs, so a template storing it dotted would work in development and
-      // silently vanish for anyone installing this scaffold from the registry.
-      for (const file of ['package.json', 'tsconfig.json', 'cordis.patch.yml', 'README.md', '.npmrc']) {
+      for (const file of ['package.json', 'tsconfig.json', 'cordis.patch.yml', 'README.md']) {
         assert.ok(existsSync(join(target, file)), `${template} is missing ${file}`)
       }
 
@@ -47,9 +44,12 @@ for (const template of TEMPLATES) {
         'a @deepseek-ai dependency would install a second copy into the profile')
       assert.equal(manifest.peerDependencies, undefined,
         'a peerDependency would be auto-installed by pnpm, same second-copy problem')
-      for (const dep of Object.keys(manifest.devDependencies ?? {})) {
-        if (!dep.startsWith('@deepseek-ai/')) continue
-        assert.ok(!dep.includes('undefined'), `unresolved version token in ${dep}`)
+      // A harness package pinned to one exact build cannot satisfy the `^` peer
+      // ranges its siblings declare, and npm refuses the tree with ERESOLVE.
+      for (const [dep, range] of Object.entries(manifest.devDependencies ?? {})) {
+        if (!dep.startsWith('@deepseek-ai/dsh-')) continue
+        assert.ok(range.startsWith('^'), `${dep} must pin a version line, got ${range}`)
+        assert.ok(!range.includes('{{'), `unresolved version token in ${dep}`)
       }
 
       const patch = readFileSync(join(target, 'cordis.patch.yml'), 'utf8')

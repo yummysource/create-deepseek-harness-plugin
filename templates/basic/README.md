@@ -80,9 +80,14 @@ A patch **replaces** the whole `config` rather than merging keys, so restate eve
 
 ## Dependencies pinned
 
-Every `@deepseek-ai/*` package sits in `devDependencies` because it is **build-time types only**:
-at runtime the plugin binds to the copies inside the running harness, resolved through
-`$DSH_HOME/profiles/node_modules`. Declaring them as real dependencies would install a second copy.
+Every `@deepseek-ai/*` package sits in `devDependencies`, and they pin a version **line**
+rather than one build.
+
+A consumer never installs devDependencies, so once this plugin is installed somewhere it
+resolves them through `$DSH_HOME/profiles/node_modules` and binds to that harness's own
+copies. While you develop here it works the other way round: this project's `node_modules`
+is on the resolution path and wins, so the local copy is what runs — which is why it must
+install completely, peers and all.
 
 - `@deepseek-ai/cordis`: `^{{CORDIS_VERSION}}`
 - `@deepseek-ai/schemastery`: `^{{SCHEMASTERY_VERSION}}` (the `Config` schema builder)

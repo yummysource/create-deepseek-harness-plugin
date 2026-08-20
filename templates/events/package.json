@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "^{{CORDIS_VERSION}}",
-    "@deepseek-ai/dsh-session": "{{DSH_SESSION_VERSION}}",
-    "@deepseek-ai/dsh-tools": "{{DSH_TOOLS_VERSION}}",
+    "@deepseek-ai/dsh-session": "^{{DSH_SESSION_VERSION}}",
+    "@deepseek-ai/dsh-tools": "^{{DSH_TOOLS_VERSION}}",
     "@deepseek-ai/schemastery": "^{{SCHEMASTERY_VERSION}}",
     "@types/node": "^22.10.0",
     "typescript": "^5.6.0"

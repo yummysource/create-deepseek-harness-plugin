@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "^{{CORDIS_VERSION}}",
-    "@deepseek-ai/dsh-cmdline": "{{DSH_TOOLS_VERSION}}",
+    "@deepseek-ai/dsh-cmdline": "^{{DSH_TOOLS_VERSION}}",
     "@deepseek-ai/schemastery": "^{{SCHEMASTERY_VERSION}}",
     "@types/node": "^22.10.0",
     "commander": "^12.1.0",

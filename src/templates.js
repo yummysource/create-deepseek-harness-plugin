@@ -68,8 +68,8 @@ export const PITFALLS = [
     zh: "npm dist-tag 陷阱：`@deepseek-ai/dsh-tools` 的 `latest` 是過期的 0.0.1-rc.1，真正的版本線在 `next` tag 下。本工具會依你**已安裝**的 dsh 所回報的版本線鎖定，之後不要再用 `npm i @deepseek-ai/dsh-tools` 覆蓋它。",
   },
   {
-    en: "Keep every `@deepseek-ai/*` in devDependencies, never dependencies or peerDependencies. They are build-time types only: at runtime the plugin binds to the copies inside the running harness, resolved through `$DSH_HOME/profiles/node_modules`. Declaring them as real dependencies installs a SECOND copy — harmless for a pure helper like defineTool, fatal for anything identity-sensitive (Schema instances, `instanceof` service classes).",
-    zh: "所有 `@deepseek-ai/*` 一律放 devDependencies，不要放 dependencies 或 peerDependencies。它們只是編譯期型別：執行期插件綁定的是它所安裝進去的那個 harness 裡的副本，經由 `$DSH_HOME/profiles/node_modules` 解析。宣告成真正的相依會讓 profile 裝進**第二份副本**——對 defineTool 這類純函式無害，對任何身分敏感的東西（Schema 實例、需要 `instanceof` 的 service 類別）則是致命的。",
+    en: "Keep every `@deepseek-ai/*` in devDependencies, never dependencies or peerDependencies. A consumer never installs devDependencies, so an INSTALLED plugin resolves them through `$DSH_HOME/profiles/node_modules` and binds to the harness's own copies. While you develop locally it is the opposite: your project's node_modules sits on the resolution path and wins, so the local copy is what actually runs and it has to be complete. That is why the harness packages pin a version LINE and their peers install normally — starve them and the plugin boots straight into `Cannot find package @deepseek-ai/dsh-scope`.",
+    zh: "所有 `@deepseek-ai/*` 一律放 devDependencies，不要放 dependencies 或 peerDependencies。使用者安裝時不會裝 devDependencies，所以**已安裝**的插件會經由 `$DSH_HOME/profiles/node_modules` 解析、綁定到 harness 自己那份副本。但你在本地開發時正好相反：專案自己的 node_modules 就在解析路徑上而且會勝出，實際執行的是本地那份副本，因此它必須是完整的。這也是為什麼 harness 套件鎖的是版本**線**、而且它們的 peer 要正常安裝——餓著它們的話，插件一啟動就會是 `Cannot find package @deepseek-ai/dsh-scope`。",
   },
   {
     en: "A schema field must not carry both `.required()` and `.default()`: required suppresses the default, so a row supplying no config fails to load with `ValidationError: invalid config`.",

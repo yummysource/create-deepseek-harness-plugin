@@ -32,3 +32,35 @@ jobs:
         run: npm test
         env:
           SMOKE_BUILD: '1'
+
+  # The gate the structural tests cannot be: install a real dsh and boot every
+  # template inside it. A generated project can install and compile perfectly
+  # and still fail every boot — that is exactly what shipped once, when the
+  # plugin's own node_modules held a harness package whose peers were missing.
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      # `dsh plugin` shells out to pnpm, and the CLI must come from npm:
+      # a pnpm global install omits an optional native package the loader needs.
+      - name: Install pnpm and the dsh CLI
+        run: |
+          corepack enable
+          npm i -g @deepseek-ai/dsh
+          dsh --version
+
+      - name: Boot every template in a real profile
+        run: |
+          set -e
+          for template in basic tool service app events; do
+            echo "::group::$template"
+            rm -rf "/tmp/verify-$template"
+            node src/cli.js "/tmp/verify-$template" -t "$template" --yes --verify
+            echo "::endgroup::"
+          done
