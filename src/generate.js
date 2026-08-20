@@ -1,9 +1,15 @@
 // Template rendering + file writing for create-deepseek-harness-plugin.
 import { readdir, stat } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
-import { dirname, join, relative, resolve } from 'node:path'
+import { basename, dirname, join, relative, resolve } from 'node:path'
 import { c, paint, ok, warn, exists, writeFileDeep, readText, resolveDshVersions } from './util.js'
 import { TEMPLATE_META, PITFALLS } from './templates.js'
+
+// npm strips dotfiles such as .npmrc from every published tarball, so the
+// templates store them undotted and the name is restored on write. Without
+// this the file would exist when developing the scaffold and silently vanish
+// for anyone installing it from the registry.
+const DOTFILES = { npmrc: '.npmrc', gitignore: '.gitignore' }
 
 const here = dirname(fileURLToPath(import.meta.url))
 const TEMPLATES_ROOT = resolve(here, '../templates')
@@ -80,8 +86,10 @@ export async function generate(cfg) {
   const written = []
   for (const rel of files) {
     const content = replace(await readText(join(srcRoot, rel)))
-    await writeFileDeep(join(targetAbs, rel), content)
-    written.push(rel)
+    const dotted = DOTFILES[basename(rel)]
+    const outRel = dotted ? join(dirname(rel), dotted) : rel
+    await writeFileDeep(join(targetAbs, outRel), content)
+    written.push(outRel)
   }
 
   console.log('')

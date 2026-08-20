@@ -11,9 +11,9 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
+    "README.md",
     "cordis.patch.yml",
-    "README.md"
+    "dist"
   ],
   "dsh": {
     "bundle": {

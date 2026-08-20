@@ -1,0 +1,10 @@
+# The @deepseek-ai packages in devDependencies are build-time types only: at
+# runtime this plugin binds to the copies inside the harness it is installed
+# into, resolved through $DSH_HOME/profiles/node_modules. Their peer graph
+# therefore belongs to that harness, not to this project.
+#
+# Installing it here only invites conflicts: a peer range like ^0.1.0-rc.7
+# resolves to the newest matching prerelease, which then demands a newer line
+# than the one pinned here, and `npm install` fails with ERESOLVE.
+legacy-peer-deps=true
+auto-install-peers=false

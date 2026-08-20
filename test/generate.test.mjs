@@ -28,7 +28,10 @@ for (const template of TEMPLATES) {
   test(`${template}: generates a loadable bundle`, () => {
     const { dir, target } = scaffold(template)
     try {
-      for (const file of ['package.json', 'tsconfig.json', 'cordis.patch.yml', 'README.md']) {
+      // .npmrc is listed here deliberately: npm strips dotfiles from published
+      // tarballs, so a template storing it dotted would work in development and
+      // silently vanish for anyone installing this scaffold from the registry.
+      for (const file of ['package.json', 'tsconfig.json', 'cordis.patch.yml', 'README.md', '.npmrc']) {
         assert.ok(existsSync(join(target, file)), `${template} is missing ${file}`)
       }
 
