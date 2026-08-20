@@ -46,9 +46,38 @@ waits to see the plugin apply.
 npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
 ```
 
-**Fifteen pitfalls come with the project.** Each generated README ends with the list,
+**Sixteen pitfalls come with the project.** Each generated README ends with the list,
 so nobody rediscovers them — including the one that costs the most time: install the CLI with
 `npm i -g @deepseek-ai/dsh`, never `pnpm add -g`.
+
+## The loop you will actually live in
+
+Mount a plugin in a throwaway profile once, passing an ABSOLUTE path:
+
+```sh
+cd my-plugin
+dsh plugin --profile probe add "$PWD"
+```
+
+A relative path is resolved against the directory you invoke from, and if that directory has
+no `package.json` the install half-succeeds — the symlink appears, the dependency is never
+recorded, the bundle never joins `dsh.profile.bundles`, and the layer never applies. Nothing
+warns you; `--dump-config` just quietly omits your row.
+
+A local directory is linked rather than copied, so the profile always sees your current
+`cordis.patch.yml` and your current `dist/`. From there the loop is two commands:
+
+```sh
+npm run build          # only after changing src/
+dsh --profile probe    # Ctrl-C to stop
+```
+
+Editing the patch needs neither a rebuild nor a re-add. Every generated README carries this
+loop with the exact line that project prints on success, so you know what you are looking for.
+
+`dsh --profile probe --dump-config` shows the composed configuration without starting
+anything. Read it when a row looks wrong, but do not mistake it for proof: it shows only that
+the configuration layer composed, never that Node can resolve your module. Booting is the proof.
 
 ## Options
 

@@ -19,18 +19,49 @@ failure is the single most expensive mistake in this file's territory.
 An observer always delegates. Returning a decision instead is how a *policy* plugin denies a
 call — a different job, and one that belongs in its own plugin.
 
-## Quick start
+## Test loop
+
+Mount the plugin in a throwaway profile once. Pass an ABSOLUTE path: a relative one is
+resolved against the directory you invoke from, and if that directory has no `package.json`
+the install half-succeeds — the symlink appears, the dependency is never recorded, the
+bundle never joins `dsh.profile.bundles`, and nothing warns you. The layer simply never
+applies.
 
 ```sh
-pnpm install
-pnpm run build
-
-# From the PARENT directory:
-dsh plugin --profile my-profile add ./{{PKG_NAME}}
-dsh --profile my-profile      # [{{PLUGIN_ID}}] listening: session/event, tools/change, tools/pre-execute
+dsh plugin --profile probe add "$PWD"       # run from inside this project
 ```
 
-Session and tool events only fire once work actually runs, so drive a task to see them.
+A local directory is linked, not copied, so the profile always sees your current
+`cordis.patch.yml` and your current `dist/`. From here the loop is two commands:
+
+```sh
+npm run build                                          # only after changing src/
+dsh --profile probe                                    # Ctrl-C to stop
+```
+
+Booting prints:
+
+```
+[{{PLUGIN_ID}}] listening: session/event, tools/change, tools/pre-execute
+```
+
+Editing `cordis.patch.yml` needs no rebuild and no re-add — just boot again.
+
+To see the composed configuration without starting anything:
+
+```sh
+dsh --profile probe --dump-config | grep -A5 {{PLUGIN_ID}}
+```
+
+Check it when a row looks wrong, but do not mistake it for proof: it shows only that the
+configuration layer composed. It says nothing about whether Node can resolve your module,
+and a profile that dumps perfectly can still fail every boot. Booting is the proof.
+
+**Clean up**
+
+```sh
+rm -rf "${DSH_HOME:-$HOME/.dsh}/profiles/probe"
+```
 
 ## Disposal
 

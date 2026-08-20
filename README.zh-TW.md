@@ -34,7 +34,34 @@ npx create-deepseek-harness-plugin@latest hello-world -t basic
 npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
 ```
 
-**十五條踩坑筆記隨專案附上。** 每個產生出來的 README 結尾都有這份清單，讓人不必重新踩一遍——包含最花時間的那一條：CLI 要用 `npm i -g @deepseek-ai/dsh` 安裝，絕對不要用 `pnpm add -g`。
+**十六條踩坑筆記隨專案附上。** 每個產生出來的 README 結尾都有這份清單，讓人不必重新踩一遍——包含最花時間的那一條：CLI 要用 `npm i -g @deepseek-ai/dsh` 安裝，絕對不要用 `pnpm add -g`。
+
+## 你真正會待在裡面的循環
+
+先把插件掛進一個拋棄式 profile，路徑要用**絕對路徑**：
+
+```sh
+cd my-plugin
+dsh plugin --profile probe add "$PWD"
+```
+
+相對路徑會以「你執行指令時所在的目錄」為基準解析；而該目錄若沒有 `package.json`，安裝會**半成功**
+——symlink 建好了，但依賴沒被記錄，bundle 也就沒進 `dsh.profile.bundles`，那一層完全不會生效。
+過程不報任何錯，`--dump-config` 只是安靜地少了你那一行。
+
+本地目錄是以 link 方式掛上、不是複製，所以 profile 永遠看到你當下的 `cordis.patch.yml` 和當下的
+`dist/`。接下來的循環只有兩個指令：
+
+```sh
+npm run build          # 只有改了 src/ 才需要
+dsh --profile probe    # Ctrl-C 結束
+```
+
+改 patch 既不用重新建置、也不用重新 add。每個產生出來的 README 都附了這個循環，並寫明該專案成功時
+會印出哪一行，你才知道要看什麼。
+
+`dsh --profile probe --dump-config` 可以在不啟動的情況下看組合後的設定。某一行看起來不對時去查它，
+但別把它當成證明：它只說明設定層組合成功，不代表 Node 解析得到你的模組。**真的啟動才是證明。**
 
 ## 選項
 

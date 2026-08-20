@@ -26,22 +26,49 @@ fallback. This precedence needs the expression to survive: a user patch that rep
 
 On `--help` the startup plugin never publishes its service, so the app row stays inactive.
 
-## Quick start
+## Test loop
+
+Mount the plugin in a throwaway profile once. Pass an ABSOLUTE path: a relative one is
+resolved against the directory you invoke from, and if that directory has no `package.json`
+the install half-succeeds — the symlink appears, the dependency is never recorded, the
+bundle never joins `dsh.profile.bundles`, and nothing warns you. The layer simply never
+applies.
 
 ```sh
-pnpm install
-pnpm run build
-
-# From the PARENT directory:
-dsh plugin --profile my-profile add ./{{PKG_NAME}}
-
-dsh --profile my-profile                       # [{{PLUGIN_ID}}] Hello, World!
-dsh --profile my-profile --greeting 'Good morning'   # [{{PLUGIN_ID}}] Good morning
-dsh --profile my-profile --help                # this app's help, and nothing boots
+dsh plugin --profile probe add "$PWD"       # run from inside this project
 ```
 
-Launcher flags must come before app arguments; the launcher's own parser stops at the first
-token it does not recognize and everything from there belongs to the app.
+A local directory is linked, not copied, so the profile always sees your current
+`cordis.patch.yml` and your current `dist/`. From here the loop is two commands:
+
+```sh
+npm run build                                          # only after changing src/
+dsh --profile probe                                    # Ctrl-C to stop
+```
+
+Booting prints:
+
+```
+[{{PLUGIN_ID}}] Hello, World!
+```
+
+Editing `cordis.patch.yml` needs no rebuild and no re-add — just boot again.
+
+To see the composed configuration without starting anything:
+
+```sh
+dsh --profile probe --dump-config | grep -A5 {{PLUGIN_ID}}
+```
+
+Check it when a row looks wrong, but do not mistake it for proof: it shows only that the
+configuration layer composed. It says nothing about whether Node can resolve your module,
+and a profile that dumps perfectly can still fail every boot. Booting is the proof.
+
+**Clean up**
+
+```sh
+rm -rf "${DSH_HOME:-$HOME/.dsh}/profiles/probe"
+```
 
 ## Dependencies pinned
 
