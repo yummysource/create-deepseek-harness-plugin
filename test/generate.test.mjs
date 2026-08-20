@@ -17,10 +17,12 @@ const { TEMPLATES } = await import(join(root, 'src', 'templates.js'))
 const buildToo = process.env.SMOKE_BUILD === '1'
 
 /** Generate one template into a throwaway directory. */
-function scaffold(template) {
+function scaffold(template, lang) {
   const dir = mkdtempSync(join(tmpdir(), `cdhp-${template}-`))
   const target = join(dir, `probe-${template}`)
-  execFileSync(process.execPath, [cli, target, '-t', template, '--yes'], { stdio: 'pipe' })
+  const args = [cli, target, '-t', template, '--yes']
+  if (lang) args.push('--lang', lang)
+  execFileSync(process.execPath, args, { stdio: 'pipe' })
   return { dir, target }
 }
 
@@ -68,6 +70,44 @@ for (const template of TEMPLATES) {
     }
   })
 }
+
+for (const template of TEMPLATES) {
+  test(`${template}: --lang zh writes the README in Chinese only`, () => {
+    const { dir, target } = scaffold(template, 'zh')
+    try {
+      const readme = readFileSync(join(target, 'README.md'), 'utf8')
+      assert.ok(/[\u4e00-\u9fff]/.test(readme), 'the Chinese README should carry Chinese prose')
+      assert.ok(readme.includes('## 踩坑筆記'), 'the pitfall list follows the chosen language')
+      assert.ok(!readme.includes('{{'), 'every token must be substituted')
+      // Both source READMEs ship inside this scaffold; a project keeps exactly one.
+      assert.ok(!existsSync(join(target, 'README.zh.md')), 'the unchosen README must not be emitted')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+}
+
+test('English is the default and leaves no Chinese README behind', () => {
+  const { dir, target } = scaffold('basic')
+  try {
+    const readme = readFileSync(join(target, 'README.md'), 'utf8')
+    assert.ok(readme.includes('## Pitfalls'))
+    assert.ok(!existsSync(join(target, 'README.zh.md')))
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test('rejects an unknown language', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'cdhp-lang-'))
+  try {
+    assert.throws(() => {
+      execFileSync(process.execPath, [cli, join(dir, 'x'), '-t', 'basic', '--yes', '--lang', 'fr'], { stdio: 'pipe' })
+    })
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
 
 test('refuses to overwrite a non-empty directory', () => {
   const { dir, target } = scaffold('basic')

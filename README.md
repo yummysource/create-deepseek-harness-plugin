@@ -79,6 +79,22 @@ loop with the exact line that project prints on success, so you know what you ar
 anything. Read it when a row looks wrong, but do not mistake it for proof: it shows only that
 the configuration layer composed, never that Node can resolve your module. Booting is the proof.
 
+Two ways to clean up, and they are not the same operation. `rm -rf` on a profile directory
+takes the whole thing — every plugin in it, your own `cordis.patch.yml` overrides, and any
+`allowBuilds` authorizations. That is exactly right for a throwaway probe profile and wrong
+for one you use. To drop a single plugin from a profile you keep, `dsh plugin remove` uninstalls
+that one dependency and removes its layer, leaving everything else in place. Neither touches
+your plugin's source directory, your sessions, or your settings — those live outside profiles.
+
+```sh
+rm -rf "${DSH_HOME:-$HOME/.dsh}/profiles/probe"       # the throwaway one
+dsh plugin --profile my-profile remove my-plugin      # one plugin, profile kept
+```
+
+Generated projects carry a README in English by default; `--lang zh` writes it in
+Traditional Chinese instead, pitfall list included. The code, its comments, and everything the
+CLI prints stay English either way.
+
 ## Options
 
 ```
@@ -86,6 +102,7 @@ the configuration layer composed, never that Node can resolve your module. Booti
   -n, --name <pkg>         npm package name (default: derived from the directory)
       --plugin-id <id>     cordis row id and plugin name export (default: derived)
       --tool-name <name>   model-facing tool name, tool template only
+  -l, --lang <en|zh>       language of the generated README (default: en)
   -y, --yes                accept defaults, skip the wizard
       --verify             install, build, mount, and boot the result
       --skip-install       leave dependencies uninstalled

@@ -3,7 +3,7 @@
 import { createInterface } from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'
 import { c, paint } from './util.js'
-import { TEMPLATES, TEMPLATE_META } from './templates.js'
+import { DEFAULT_LANGUAGE, LANGUAGES, TEMPLATES, TEMPLATE_META } from './templates.js'
 import { packageNameFromDir, pluginIdFromPackage, toolNameFromPackage } from './names.js'
 
 /**
@@ -54,6 +54,14 @@ export async function runWizard(initial) {
     if (TEMPLATE_META[cfg.template].asksToolName && !cfg.toolName) {
       const derived = toolNameFromPackage(cfg.name)
       cfg.toolName = await answer(`${paint(c.bold, 'Tool name')} [${derived}]: `, derived)
+    }
+
+    if (!cfg.lang) {
+      const picked = await answer(
+        `${paint(c.bold, 'README language')} [${LANGUAGES.join('/')}] (${DEFAULT_LANGUAGE}): `,
+        DEFAULT_LANGUAGE,
+      )
+      cfg.lang = LANGUAGES.includes(picked) ? picked : DEFAULT_LANGUAGE
     }
 
     if (cfg.verify === undefined) {

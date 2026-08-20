@@ -8,6 +8,7 @@ const OPTIONS = {
   name: { type: 'string', short: 'n' },
   'plugin-id': { type: 'string' },
   'tool-name': { type: 'string' },
+  lang: { type: 'string', short: 'l' },
   yes: { type: 'boolean', short: 'y' },
   verify: { type: 'boolean' },
   'skip-install': { type: 'boolean' },
@@ -52,6 +53,7 @@ ${paint(c.cyan, 'Options')}
   -n, --name <pkg>         npm package name (default: derived from the directory)
       --plugin-id <id>     cordis row id and plugin name export (default: derived)
       --tool-name <name>   Model-facing tool name, tool template only (default: derived)
+  -l, --lang <en|zh>       Language of the generated project's README (default: en)
   -y, --yes                Accept every default and skip the prompts
       --verify             After generating: install, build, mount, and BOOT it in a temp profile
       --skip-install       Leave dependencies uninstalled
@@ -61,5 +63,6 @@ ${paint(c.cyan, 'Options')}
 ${paint(c.cyan, 'Examples')}
   npx create-deepseek-harness-plugin@latest hello-world -t basic
   npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
+  npx create-deepseek-harness-plugin@latest my-plugin -t basic --lang zh
   npx create-deepseek-harness-plugin@latest
 `

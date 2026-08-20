@@ -63,6 +63,20 @@ dsh --profile probe    # Ctrl-C 結束
 `dsh --profile probe --dump-config` 可以在不啟動的情況下看組合後的設定。某一行看起來不對時去查它，
 但別把它當成證明：它只說明設定層組合成功，不代表 Node 解析得到你的模組。**真的啟動才是證明。**
 
+清理有兩種方式，而它們不是同一種操作。對 profile 目錄下 `rm -rf` 是整個帶走——裡面的每個插件、
+你自己的 `cordis.patch.yml` 覆寫層、以及 `allowBuilds` 授權全都消失。對拋棄式的 probe profile 來說
+這正好，對你實際在用的 profile 則是錯的。要從保留的 profile 中只拿掉一個插件，用 `dsh plugin remove`
+——它只卸載那一個相依並移除對應的層，其餘原封不動。兩者都不會動到你的插件原始碼、對話歷史、或全域設定，
+因為那些都在 profiles 之外。
+
+```sh
+rm -rf "${DSH_HOME:-$HOME/.dsh}/profiles/probe"       # 拋棄式的那個
+dsh plugin --profile my-profile remove my-plugin      # 只拿掉一個插件，profile 保留
+```
+
+產生的專案預設附英文 README；加上 `--lang zh` 則會改用繁體中文撰寫，連踩坑清單一起。無論選哪個，
+程式碼、程式碼註解、以及 CLI 自己的輸出都維持英文。
+
 ## 選項
 
 ```
@@ -70,6 +84,7 @@ dsh --profile probe    # Ctrl-C 結束
   -n, --name <pkg>         npm 套件名（預設由目錄名推導）
       --plugin-id <id>     cordis 的 row id 與插件 name 匯出（預設推導）
       --tool-name <name>   模型看到的工具名，僅 tool 模板適用
+  -l, --lang <en|zh>       產生的 README 語言（預設 en）
   -y, --yes                全部採用預設值，跳過提問
       --verify             產生後安裝、建置、掛載並啟動驗證
       --skip-install       不安裝相依套件

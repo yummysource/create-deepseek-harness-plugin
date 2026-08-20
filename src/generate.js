@@ -11,6 +11,22 @@ import { TEMPLATE_META, PITFALLS } from './templates.js'
 // for anyone installing it from the registry.
 const DOTFILES = { npmrc: '.npmrc', gitignore: '.gitignore' }
 
+// Each template carries both READMEs; the project keeps one, named README.md.
+const READMES = { 'README.md': 'en', 'README.zh.md': 'zh' }
+
+/**
+ * The path a template file is written to, or `null` to skip it.
+ * @param rel - the file's path relative to the template root.
+ * @param lang - the language the project chose.
+ */
+function outputPath(rel, lang) {
+  const name = basename(rel)
+  const readmeLang = READMES[name]
+  if (readmeLang) return readmeLang === lang ? join(dirname(rel), 'README.md') : null
+  const dotted = DOTFILES[name]
+  return dotted ? join(dirname(rel), dotted) : rel
+}
+
 const here = dirname(fileURLToPath(import.meta.url))
 const TEMPLATES_ROOT = resolve(here, '../templates')
 
@@ -37,10 +53,10 @@ function pascalFromId(id) {
   return camel.charAt(0).toUpperCase() + camel.slice(1)
 }
 
-function renderPitfalls() {
-  const lines = ['## Pitfalls', '']
+function renderPitfalls(lang) {
+  const lines = [lang === 'zh' ? '## 踩坑筆記' : '## Pitfalls', '']
   for (let i = 0; i < PITFALLS.length; i++) {
-    lines.push(`${i + 1}. ${PITFALLS[i]}`)
+    lines.push(`${i + 1}. ${PITFALLS[i][lang]}`)
     lines.push('')
   }
   return lines.join('\n')
@@ -48,7 +64,7 @@ function renderPitfalls() {
 
 /**
  * Generate one plugin project from a template.
- * @param cfg { targetDir, name, pluginId, toolName, template, skipInstall }
+ * @param cfg { targetDir, name, pluginId, toolName, template, lang, skipInstall }
  * @returns { cfg, versions, files, targetAbs } for the caller (and --verify).
  */
 export async function generate(cfg) {
@@ -75,7 +91,7 @@ export async function generate(cfg) {
     SCHEMASTERY_VERSION: versions.schemastery,
     DSH_VERSION: versions.dsh,
     YEAR: String(new Date().getFullYear()),
-    PITFALLS: renderPitfalls(),
+    PITFALLS: renderPitfalls(cfg.lang),
   }
 
   const replace = (content) =>
@@ -85,9 +101,9 @@ export async function generate(cfg) {
   const files = await listFiles(srcRoot)
   const written = []
   for (const rel of files) {
+    const outRel = outputPath(rel, cfg.lang)
+    if (!outRel) continue
     const content = replace(await readText(join(srcRoot, rel)))
-    const dotted = DOTFILES[basename(rel)]
-    const outRel = dotted ? join(dirname(rel), dotted) : rel
     await writeFileDeep(join(targetAbs, outRel), content)
     written.push(outRel)
   }

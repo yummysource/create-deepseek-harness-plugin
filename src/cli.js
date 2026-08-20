@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { c, paint, err, info } from './util.js'
 import { parseCliArgs, HELP } from './args.js'
-import { TEMPLATES, TEMPLATE_META } from './templates.js'
+import { DEFAULT_LANGUAGE, LANGUAGES, TEMPLATES, TEMPLATE_META } from './templates.js'
 import { packageNameFromDir, pluginIdFromPackage, toolNameFromPackage } from './names.js'
 import { runWizard } from './wizard.js'
 import { generate } from './generate.js'
@@ -38,6 +38,7 @@ async function resolveConfig(flags, targetDir) {
     template: flags.template,
     pluginId: flags['plugin-id'],
     toolName: flags['tool-name'],
+    lang: flags.lang,
     verify: flags.verify === true ? true : undefined,
     skipInstall: flags['skip-install'] === true,
   }
@@ -50,6 +51,10 @@ async function resolveConfig(flags, targetDir) {
   if (cfg.template && !TEMPLATES.includes(cfg.template)) {
     fail(`unknown template ${JSON.stringify(cfg.template)} — choose one of: ${TEMPLATES.join(', ')}`)
   }
+  if (cfg.lang && !LANGUAGES.includes(cfg.lang)) {
+    fail(`unknown language ${JSON.stringify(cfg.lang)} — choose one of: ${LANGUAGES.join(', ')}`)
+  }
+  cfg.lang ??= DEFAULT_LANGUAGE
   cfg.template ??= DEFAULT_TEMPLATE
   cfg.name ||= packageNameFromDir(cfg.targetDir)
   cfg.pluginId ||= pluginIdFromPackage(cfg.name)

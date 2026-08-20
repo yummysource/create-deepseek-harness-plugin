@@ -56,9 +56,24 @@ and a profile that dumps perfectly can still fail every boot. Booting is the pro
 
 **Clean up**
 
+Drop the whole throwaway profile:
+
 ```sh
 rm -rf "${DSH_HOME:-$HOME/.dsh}/profiles/probe"
 ```
+
+To remove only this plugin from a profile you actually use, use `remove` instead. It
+uninstalls the one dependency and drops its layer from `dsh.profile.bundles`, leaving that
+profile's other plugins, your own `cordis.patch.yml` overrides, and any `allowBuilds`
+authorizations in `pnpm-workspace.yaml` untouched:
+
+```sh
+dsh plugin --profile my-profile remove {{PKG_NAME}}
+```
+
+`remove` resolves the whole manifest first, so it fails too when the manifest references a
+path that no longer exists. Recovering from that state means `rm -rf`, or editing
+`package.json` by hand.
 
 ## Consuming it from another plugin
 
