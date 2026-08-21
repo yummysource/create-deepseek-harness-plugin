@@ -1,0 +1,11 @@
+# The {{PKG_NAME}} bundle layer.
+#
+# `providers` are the route names this adapter claims. A model request naming
+# one of them reaches this adapter; two adapters claiming the same route is a
+# registration conflict, not a race.
+
+- insert:
+    - id: {{PLUGIN_ID}}
+      name: {{PKG_NAME}}
+      config:
+        providers: ['{{PLUGIN_ID}}']

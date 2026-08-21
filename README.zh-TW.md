@@ -18,7 +18,8 @@ npx create-deepseek-harness-plugin@latest hello-world -t basic
 | `tool` | 模型可以呼叫的工具，用 `defineTool`：參數 schema、輸出 schema、render、UI 卡片，外加設定。 |
 | `service` | 一組能力接縫：抽象的 Service Definition 加上一份能跑的實作，發佈成 `ctx.<id>`。 |
 | `app` | 擁有自己命令列參數的應用，並透過 `!!js` 把參數餵進自己那一行設定。 |
-| `events` | 監聽者：session 與工具事件，以及那條漏掉就會靜默吃掉工具呼叫的 emit / waterfall 規則。 |
+| `events` | 監聽者：session 與工具事件、四種分派模式，以及自己宣告的事件供他人擴充。 |
+| `llm` | LLM adapter：chunk 協定、attribution 契約，以及一個標記好的 provider 呼叫位置。 |
 
 每個模板都附 `Config` schema——因為「讓它能設定」永遠是「讓它能跑」之後的第一個需求。
 
@@ -34,7 +35,7 @@ npx create-deepseek-harness-plugin@latest hello-world -t basic
 npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
 ```
 
-**十六條踩坑筆記隨專案附上。** 每個產生出來的 README 結尾都有這份清單，讓人不必重新踩一遍——包含最花時間的那一條：CLI 要用 `npm i -g @deepseek-ai/dsh` 安裝，絕對不要用 `pnpm add -g`。
+**二十條踩坑筆記隨專案附上。** 每個產生出來的 README 結尾都有這份清單，讓人不必重新踩一遍——包含最花時間的那一條：CLI 要用 `npm i -g @deepseek-ai/dsh` 安裝，絕對不要用 `pnpm add -g`。
 
 ## 你真正會待在裡面的循環
 
@@ -80,7 +81,7 @@ dsh plugin --profile my-profile remove my-plugin      # 只拿掉一個插件，
 ## 選項
 
 ```
-  -t, --template <name>    basic | tool | service | app | events
+  -t, --template <name>    basic | tool | service | app | events | llm
   -n, --name <pkg>         npm 套件名（預設由目錄名推導）
       --plugin-id <id>     cordis 的 row id 與插件 name 匯出（預設推導）
       --tool-name <name>   模型看到的工具名，僅 tool 模板適用

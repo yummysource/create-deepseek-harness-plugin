@@ -1,6 +1,6 @@
 // Template registry + shared metadata for create-deepseek-harness-plugin.
 
-export const TEMPLATES = ['basic', 'tool', 'service', 'app', 'events']
+export const TEMPLATES = ['basic', 'tool', 'service', 'app', 'events', 'llm']
 
 /** Languages a generated project's README can be written in. */
 export const LANGUAGES = ['en', 'zh']
@@ -38,6 +38,14 @@ export const TEMPLATE_META = {
     label: 'app',
     description: 'An app that owns its own command-line flags and feeds them into its row',
     defaultPluginId: 'my-app',
+    defaultToolName: null,
+    asksToolName: false,
+  },
+  llm: {
+    id: 'llm',
+    label: 'llm',
+    description: 'LLM adapter: translate a provider API into the harness chunk stream',
+    defaultPluginId: 'my-llm-adapter',
     defaultToolName: null,
     asksToolName: false,
   },
@@ -118,5 +126,21 @@ export const PITFALLS = [
   {
     en: "Having the model actually call your tool needs `DEEPSEEK_API_KEY`; without one `--verify` still proves load/list/boot, and the model call fails with MISSING_CREDENTIAL.",
     zh: "要讓模型真的呼叫你的工具需要 `DEEPSEEK_API_KEY`；沒有 key 時 `--verify` 仍能證明載入／列出／啟動，模型呼叫則會以 MISSING_CREDENTIAL 失敗。",
+  },
+  {
+    en: "Export `Config` as a Schemastery schema, not a plain object. A bare object does not implement the Standard Schema interface Cordis requires, so it is not used to validate or to fill defaults.",
+    zh: "`Config` 要匯出 Schemastery 的 schema，不能是普通物件。裸物件沒有實作 Cordis 要求的 Standard Schema 介面，因此不會被用來驗證、也不會填入預設值。",
+  },
+  {
+    en: "Read an OPTIONAL service with `ctx.get('name')`, and reserve `ctx.<name>` for services you declared in `inject`. The property proxy is topology-sensitive: outside a declared injection it can resolve differently than the global service store you meant to read.",
+    zh: "選用的服務要用 `ctx.get('name')` 讀，`ctx.<name>` 只保留給你已在 `inject` 宣告的服務。那個 property proxy 對拓撲敏感：在宣告的注入之外，它解析到的東西可能跟你想讀的全域服務登錄表不同。",
+  },
+  {
+    en: "Disposers start in reverse registration order, but async ones run CONCURRENTLY — there is no serial completion guarantee between separate effects. Cleanup whose order matters belongs in one disposer returned from a single `ctx.effect()`, awaiting its steps itself.",
+    zh: "disposer 是反序啟動的，但非同步的那些會**併發執行**——不同 effect 之間沒有序列完成的保證。有順序需求的清理要放進同一個 `ctx.effect()` 回傳的那一個 disposer 裡，自己 await 每個步驟。",
+  },
+  {
+    en: "A plugin whose injected service disappears unloads automatically and loads again when the service returns. Treat `apply` as something that can run more than once in a process, and keep all state inside it rather than in module scope.",
+    zh: "被注入的服務消失時，插件會自動卸載，並在服務回來時重新載入。所以要把 `apply` 當成一個行程內可能執行多次的東西，狀態全部放在它裡面，不要放模組層。",
   },
 ]

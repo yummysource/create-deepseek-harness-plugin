@@ -1,27 +1,40 @@
 # {{PKG_NAME}}
 
-> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的 DeepSeek Harness **監聽插件**。
+> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的 DeepSeek Harness **LLM adapter**。
 
-監聽 session log、工具註冊表、以及工具執行管線。它不貢獻任何東西——這正是遙測、稽核、把狀態鏡像到
-別處這類需求該有的形狀。
+讓 harness 學會跟某一個 provider 對話。它宣告的路由是 `{{PLUGIN_ID}}`；指名該 provider 的模型請求
+就會落到這個 adapter。
 
-## 兩種監聽語義，以及為什麼這很重要
+## adapter 對 harness 的義務
 
-| 模式 | 契約 |
-|---|---|
-| `emit` | 純通知。每個監聽器都會跑，回傳值一律忽略。 |
-| `bail` | 一個提問。第一個不是 `null`/`false`/`undefined` 的答案勝出，後面的監聽器不會執行。 |
-| `serial` | 依註冊順序執行且會 await 非同步結果，遇到第一個真答案就停。適合有先後順序的初始化。 |
-| `waterfall` | 一條鏈。**你必須呼叫 `next()`** 才會往下委派。 |
+`stream()` 是唯一必須實作的方法——它收到一個 provider 中立的請求，吐出 harness 的 chunk 詞彙。
+`providerInfo`、`listModels`、`resolveModel`、`providerRetryPolicy` 都有可用的預設實作；只有當你的
+provider 能給出比預設更好的答案時才需要覆寫。
 
-這個插件用上述第一種與最後一種模式監聽 harness 的事件，另外宣告了三個自己的事件（每種模式一個），
-讓別的插件能用它擴充 harness 的同一套方式來擴充它。`interface Events` 的 declaration merging 會同時
-為兩邊定型：監聽器的簽名，以及分派時的參數。
+有兩條契約沒有商量餘地：
 
-waterfall 監聽器沒呼叫 `next()` 就回傳會讓整條鏈短路——以 `tools/pre-execute` 來說，那個工具呼叫
-根本不會發生，而且任何地方都不會報錯。這種靜默失敗是這個領域裡代價最高的錯誤。
+1. **每一個送往 provider 的 HTTP 請求都要帶 `attributionHeaders()`。** 它向 provider 表明 harness 的身分，
+   任何東西都不能把它抑制掉——請把它**合併**進你的 headers，不要用自己那組整個取代。`src/index.ts` 裡的
+   `buildHeaders()` 就是做這件事的地方。
+2. **`stream()` 要尊重 `options.signal`。** 被取消的回合必須停掉 provider 呼叫，而不是讓它漏在那裡。
 
-監聽者永遠往下委派。回傳一個決策則是**策略**插件拒絕呼叫的做法——那是另一件工作，屬於它自己的插件。
+## chunk 協定
+
+```
+block-start  →  text-delta …  →  block-end  →  usage  →  finish
+```
+
+`block-end` 帶的是**完整的區塊**、不只是最後一個 delta：消費端會用它重建整則訊息，所以它是權威值、
+不是順手附上的方便欄位。`finish` 收的是帶 `kind` 的 `FinishReason` 物件、不是裸字串，而且那張 reason
+對照表是可合併擴充的，provider 能提出自己的理由。
+
+## 把 echo 換成真的呼叫
+
+產生出來的 `stream()` 是把最後一則使用者訊息回聲回去，沒有真的呼叫任何人。這讓專案立刻可跑、也把協定
+完整展示出來；provider 呼叫就放在那個標記好的位置。用 `this.config.baseUrl`、`this.buildHeaders(...)`，
+並把 `options.signal` 傳給 `fetch`。
+
+啟動只證明 adapter 註冊成功；要讓模型真的走這條路由，需要一個 provider 和憑證。
 
 ## 測試循環
 
@@ -44,7 +57,7 @@ dsh --profile probe                                    # Ctrl-C 結束
 啟動後會印出：
 
 ```
-[{{PLUGIN_ID}}] listening: session/event, tools/change, tools/pre-execute
+[{{PLUGIN_ID}}] adapter registered for: {{PLUGIN_ID}}
 ```
 
 改 `cordis.patch.yml` 不用重新建置、也不用重新 add——直接再啟動一次即可。
@@ -77,21 +90,16 @@ dsh plugin --profile my-profile remove {{PKG_NAME}}
 （`remove` 需要先解析整份 manifest，所以當 manifest 引用了已不存在的路徑時它自己也會失敗；那種壞掉的
 狀態只能靠 `rm -rf` 或手動編輯 `package.json` 脫身。）
 
-session 與工具事件要等真的有工作在跑才會觸發，所以要下一個任務才看得到。
-
-## 卸載證明
-
-`ctx.on()` 本身就是 effect——cordis 會在卸載時移除那些監聽器。計時器則是 cordis 不擁有的資源，所以它
-放在 `ctx.effect()` 裡並回傳 disposer。重新載入插件，你會在新實例啟動前看到 `DISPOSED` 印出來；
-那一行就是這個插件沒有洩漏任何東西的證明。
-
 ## 設定
 
 ```yaml
 - id: {{PLUGIN_ID}}
   config:
-    sampleEvery: 1     # 每一條 session 事件都印，而不是每 25 條
+    providers: ['{{PLUGIN_ID}}', 'my-alias']
+    baseUrl: https://api.example.com/v1
 ```
+
+兩個 adapter 宣告同一條路由是**註冊衝突**、不是競態——它會拋錯，而且既有路由不受影響。
 
 ## 相依鎖定
 
@@ -102,8 +110,8 @@ session 與工具事件要等真的有工作在跑才會觸發，所以要下一
 本專案的 `node_modules` 就在解析路徑上而且會勝出，實際執行的是本地那份——所以它必須完整安裝，
 連 peer 一起。
 
-- `@deepseek-ai/dsh-session`：`{{DSH_SESSION_VERSION}}`（`Session`、`SessionEvent`）
-- `@deepseek-ai/dsh-tools`：`{{DSH_TOOLS_VERSION}}`（`ToolExecution`、`PreToolDecision`）
+- `@deepseek-ai/dsh-llm`：`^{{DSH_TOOLS_VERSION}}`（`LlmAdapter`、chunk 型別、`attributionHeaders`）
 - `@deepseek-ai/cordis`：`^{{CORDIS_VERSION}}`
+- `@deepseek-ai/schemastery`：`^{{SCHEMASTERY_VERSION}}`
 
 {{PITFALLS}}

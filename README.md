@@ -18,7 +18,8 @@ Keep `@latest`: npx caches, and without it you may silently run an old copy.
 | `tool` | A tool the model can call, via `defineTool`: parameter schema, output schema, render, its UI card, plus config. |
 | `service` | A capability seam: an abstract Service Definition plus a working provider, published as `ctx.<id>`. |
 | `app` | An app that owns its own command-line flags and feeds them into its row through `!!js`. |
-| `events` | An observer: session and tool listeners, and the emit-vs-waterfall rule that silently breaks tool calls when missed. |
+| `events` | An observer: session and tool listeners, all four dispatch modes, and events of its own for others to extend. |
+| `llm` | An LLM adapter: the chunk protocol, the attribution contract, and one marked place for the provider call. |
 
 Every template ships a `Config` schema, because "make it configurable" is the first thing
 anyone needs after "make it run".
@@ -47,7 +48,7 @@ waits to see the plugin apply.
 npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
 ```
 
-**Sixteen pitfalls come with the project.** Each generated README ends with the list,
+**Twenty pitfalls come with the project.** Each generated README ends with the list,
 so nobody rediscovers them — including the one that costs the most time: install the CLI with
 `npm i -g @deepseek-ai/dsh`, never `pnpm add -g`.
 
@@ -99,7 +100,7 @@ CLI prints stay English either way.
 ## Options
 
 ```
-  -t, --template <name>    basic | tool | service | app | events
+  -t, --template <name>    basic | tool | service | app | events | llm
   -n, --name <pkg>         npm package name (default: derived from the directory)
       --plugin-id <id>     cordis row id and plugin name export (default: derived)
       --tool-name <name>   model-facing tool name, tool template only

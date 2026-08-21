@@ -58,7 +58,7 @@ jobs:
       - name: Boot every template in a real profile
         run: |
           set -e
-          for template in basic tool service app events; do
+          for template in basic tool service app events llm; do
             echo "::group::$template"
             rm -rf "/tmp/verify-$template"
             node src/cli.js "/tmp/verify-$template" -t "$template" --yes --verify
