@@ -97,6 +97,10 @@ Generated projects carry a README in English by default; `--lang zh` writes it i
 Traditional Chinese instead, pitfall list included. The code, its comments, and everything the
 CLI prints stay English either way.
 
+**Generated projects carry an `AGENTS.md`.** It is the rules rather than the tutorial: what an
+agent editing the project must not do, and what counts as evidence that a change works. Both
+files ship with every template.
+
 ## Options
 
 ```

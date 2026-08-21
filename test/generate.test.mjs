@@ -30,7 +30,7 @@ for (const template of TEMPLATES) {
   test(`${template}: generates a loadable bundle`, () => {
     const { dir, target } = scaffold(template)
     try {
-      for (const file of ['package.json', 'tsconfig.json', 'cordis.patch.yml', 'README.md']) {
+      for (const file of ['package.json', 'tsconfig.json', 'cordis.patch.yml', 'README.md', 'AGENTS.md']) {
         assert.ok(existsSync(join(target, file)), `${template} is missing ${file}`)
       }
 
@@ -59,6 +59,12 @@ for (const template of TEMPLATES) {
       const readme = readFileSync(join(target, 'README.md'), 'utf8')
       assert.ok(!readme.includes('{{'), 'every token in the README must be substituted')
       assert.ok(readme.includes('## Pitfalls'), 'the pitfall list ships with every project')
+
+      // The rules an agent working in the project must follow, including the
+      // line booting prints — the only evidence that a change actually works.
+      const agents = readFileSync(join(target, 'AGENTS.md'), 'utf8')
+      assert.ok(!agents.includes('{{'), 'every token in AGENTS.md must be substituted')
+      assert.ok(agents.includes('## Verifying a change'), 'AGENTS.md must state how a change is proven')
 
       if (buildToo) {
         execFileSync('npm', ['install', '--no-audit', '--no-fund'], { cwd: target, stdio: 'pipe' })
