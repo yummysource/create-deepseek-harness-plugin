@@ -1,15 +1,15 @@
 {
   "name": "@allis-plugin/create-dsh",
   "version": "0.1.5",
-  "description": "Scaffold a DeepSeek Harness (DSH) plugin — basic / tool / service / app / events / webui templates, version pinning aligned to your installed dsh, and a --verify that actually boots the plugin.",
+  "description": "Scaffold a DeepSeek Harness (DSH) plugin \u2014 basic / tool / service / app / events / webui templates, version pinning aligned to your installed dsh, and a --verify that actually boots the plugin.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yummysource/@allis-plugin/create-dsh.git"
+    "url": "git+https://github.com/yummysource/create-deepseek-harness-plugin.git"
   },
-  "homepage": "https://github.com/yummysource/@allis-plugin/create-dsh#readme",
+  "homepage": "https://github.com/yummysource/create-deepseek-harness-plugin#readme",
   "bugs": {
-    "url": "https://github.com/yummysource/@allis-plugin/create-dsh/issues"
+    "url": "https://github.com/yummysource/create-deepseek-harness-plugin/issues"
   },
   "type": "module",
   "bin": {
