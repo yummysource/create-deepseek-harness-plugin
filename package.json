@@ -1,7 +1,7 @@
 {
   "name": "@allis-plugin/create-dsh",
-  "version": "0.1.5",
-  "description": "Scaffold a DeepSeek Harness (DSH) plugin \u2014 basic / tool / service / app / events / webui templates, version pinning aligned to your installed dsh, and a --verify that actually boots the plugin.",
+  "version": "1.0.0",
+  "description": "Scaffold a DeepSeek Harness (DSH) plugin — basic / tool / service / app / events / webui templates, version pinning aligned to your installed dsh, and a --verify that actually boots the plugin.",
   "license": "MIT",
   "repository": {
     "type": "git",
