@@ -5,11 +5,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yummysource/create-deepseek-harness-plugin.git"
+    "url": "git+https://github.com/yummysource/create-dsh.git"
   },
-  "homepage": "https://github.com/yummysource/create-deepseek-harness-plugin#readme",
+  "homepage": "https://github.com/yummysource/create-dsh#readme",
   "bugs": {
-    "url": "https://github.com/yummysource/create-deepseek-harness-plugin/issues"
+    "url": "https://github.com/yummysource/create-dsh/issues"
   },
   "type": "module",
   "bin": {
