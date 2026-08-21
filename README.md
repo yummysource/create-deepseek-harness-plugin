@@ -1,11 +1,11 @@
-# create-deepseek-harness-plugin
+# @allis-plugin/create-dsh
 
 English | [繁體中文](README.zh-TW.md)
 
 Scaffold a [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin that compiles, mounts, and boots on the first try.
 
 ```sh
-npx create-deepseek-harness-plugin@latest hello-world -t basic
+npx @allis-plugin/create-dsh@latest hello-world -t basic
 ```
 
 Keep `@latest`: npx caches, and without it you may silently run an old copy.
@@ -45,7 +45,7 @@ Node cannot resolve the module. The last verification step therefore starts a re
 waits to see the plugin apply.
 
 ```sh
-npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
+npx @allis-plugin/create-dsh@latest my-tool -t tool --yes --verify
 ```
 
 **Twenty pitfalls come with the project.** Each generated README ends with the list,

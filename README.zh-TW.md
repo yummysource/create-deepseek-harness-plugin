@@ -1,11 +1,11 @@
-# create-deepseek-harness-plugin
+# @allis-plugin/create-dsh
 
 [English](README.md) | 繁體中文
 
 產生一個能一次編譯成功、掛得上去、也真的跑得起來的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 插件專案。
 
 ```sh
-npx create-deepseek-harness-plugin@latest hello-world -t basic
+npx @allis-plugin/create-dsh@latest hello-world -t basic
 ```
 
 `@latest` 不要省略：npx 會快取，少了它可能默默跑到你幾個月前那份。
@@ -32,7 +32,7 @@ npx create-deepseek-harness-plugin@latest hello-world -t basic
 **`--verify` 會真的啟動插件，不只檢查設定。** `--dump-config` 只證明設定層組合成功；一個 dump 得漂漂亮亮的 profile 照樣可能每次啟動都失敗，因為 Node 根本解析不到那個模組。所以最後一步會啟動真實 profile，等到看見插件套用為止。
 
 ```sh
-npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
+npx @allis-plugin/create-dsh@latest my-tool -t tool --yes --verify
 ```
 
 **二十條踩坑筆記隨專案附上。** 每個產生出來的 README 結尾都有這份清單，讓人不必重新踩一遍——包含最花時間的那一條：CLI 要用 `npm i -g @deepseek-ai/dsh` 安裝，絕對不要用 `pnpm add -g`。

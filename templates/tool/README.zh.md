@@ -1,6 +1,6 @@
 # {{PKG_NAME}}
 
-> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的 DeepSeek Harness **工具插件**。
+> 由 [`@allis-plugin/create-dsh`](https://www.npmjs.com/package/@allis-plugin/create-dsh) 產生的 DeepSeek Harness **工具插件**。
 
 註冊 `{{TOOL_NAME}}`，一個模型可以呼叫的工具。
 

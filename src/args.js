@@ -36,11 +36,11 @@ const templateLines = TEMPLATES
   .join('\n')
 
 export const HELP = `
-${paint(c.bold, 'create-deepseek-harness-plugin')} — scaffold a DeepSeek Harness plugin
+${paint(c.bold, '@allis-plugin/create-dsh')} — scaffold a DeepSeek Harness plugin
 
 ${paint(c.cyan, 'Usage')}
-  npx create-deepseek-harness-plugin@latest [project-dir] [options]
-  npm create deepseek-harness-plugin@latest -- [project-dir] [options]
+  npx @allis-plugin/create-dsh@latest [project-dir] [options]
+  npm create @allis-plugin/dsh@latest -- [project-dir] [options]
 
 ${paint(c.cyan, 'Arguments')}
   [project-dir]            Target directory. Omit it to answer the prompts instead.
@@ -61,8 +61,8 @@ ${paint(c.cyan, 'Options')}
   -v, --version            Print the scaffold version
 
 ${paint(c.cyan, 'Examples')}
-  npx create-deepseek-harness-plugin@latest hello-world -t basic
-  npx create-deepseek-harness-plugin@latest my-tool -t tool --yes --verify
-  npx create-deepseek-harness-plugin@latest my-plugin -t basic --lang zh
-  npx create-deepseek-harness-plugin@latest
+  npx @allis-plugin/create-dsh@latest hello-world -t basic
+  npx @allis-plugin/create-dsh@latest my-tool -t tool --yes --verify
+  npx @allis-plugin/create-dsh@latest my-plugin -t basic --lang zh
+  npx @allis-plugin/create-dsh@latest
 `

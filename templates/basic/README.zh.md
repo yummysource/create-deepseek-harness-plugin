@@ -1,6 +1,6 @@
 # {{PKG_NAME}}
 
-> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的 DeepSeek Harness **純副作用插件**（帶設定 schema）。
+> 由 [`@allis-plugin/create-dsh`](https://www.npmjs.com/package/@allis-plugin/create-dsh) 產生的 DeepSeek Harness **純副作用插件**（帶設定 schema）。
 
 每 5 秒印出一次 `Hello, World!`。訊息內容與間隔都可以設定。
 

@@ -1,6 +1,6 @@
 # {{PKG_NAME}}
 
-> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的、**擁有自己命令列參數**的 DeepSeek Harness 應用插件。
+> 由 [`@allis-plugin/create-dsh`](https://www.npmjs.com/package/@allis-plugin/create-dsh) 產生的、**擁有自己命令列參數**的 DeepSeek Harness 應用插件。
 
 ## 為什麼是兩個檔案
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// create-deepseek-harness-plugin — scaffold a DeepSeek Harness plugin.
+// @allis-plugin/create-dsh — scaffold a DeepSeek Harness plugin.
 // Zero runtime dependencies; templates ship inside this package.
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'

@@ -1,4 +1,4 @@
-// Template rendering + file writing for create-deepseek-harness-plugin.
+// Template rendering + file writing for @allis-plugin/create-dsh.
 import { readdir, stat } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { basename, dirname, join, relative, resolve } from 'node:path'

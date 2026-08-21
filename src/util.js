@@ -1,4 +1,4 @@
-// Zero-dependency helpers for create-deepseek-harness-plugin.
+// Zero-dependency helpers for @allis-plugin/create-dsh.
 // All output/errors are bilingual-friendly; code comments stay English.
 import { spawn } from 'node:child_process'
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises'

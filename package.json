@@ -1,19 +1,19 @@
 {
-  "name": "create-deepseek-harness-plugin",
+  "name": "@allis-plugin/create-dsh",
   "version": "0.1.4",
   "description": "Scaffold a DeepSeek Harness (DSH) plugin — basic / tool / service / app / events / webui templates, version pinning aligned to your installed dsh, and a --verify that actually boots the plugin.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yummysource/create-deepseek-harness-plugin.git"
+    "url": "git+https://github.com/yummysource/@allis-plugin/create-dsh.git"
   },
-  "homepage": "https://github.com/yummysource/create-deepseek-harness-plugin#readme",
+  "homepage": "https://github.com/yummysource/@allis-plugin/create-dsh#readme",
   "bugs": {
-    "url": "https://github.com/yummysource/create-deepseek-harness-plugin/issues"
+    "url": "https://github.com/yummysource/@allis-plugin/create-dsh/issues"
   },
   "type": "module",
   "bin": {
-    "create-deepseek-harness-plugin": "./src/cli.js"
+    "create-dsh": "./src/cli.js"
   },
   "files": [
     "src",
@@ -32,8 +32,11 @@
     "plugin",
     "cordis",
     "scaffold",
-    "create-deepseek-harness-plugin"
+    "create-dsh"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "node --test",
     "test:verify": "DSH_SMOKE_VERIFY=1 node --test"

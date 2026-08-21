@@ -1,6 +1,6 @@
 # {{PKG_NAME}}
 
-> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的 DeepSeek Harness **監聽插件**。
+> 由 [`@allis-plugin/create-dsh`](https://www.npmjs.com/package/@allis-plugin/create-dsh) 產生的 DeepSeek Harness **監聽插件**。
 
 監聽 session log、工具註冊表、以及工具執行管線。它不貢獻任何東西——這正是遙測、稽核、把狀態鏡像到
 別處這類需求該有的形狀。

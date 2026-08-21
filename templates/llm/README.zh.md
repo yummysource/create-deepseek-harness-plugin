@@ -1,6 +1,6 @@
 # {{PKG_NAME}}
 
-> 由 [`create-deepseek-harness-plugin`](https://www.npmjs.com/package/create-deepseek-harness-plugin) 產生的 DeepSeek Harness **LLM adapter**。
+> 由 [`@allis-plugin/create-dsh`](https://www.npmjs.com/package/@allis-plugin/create-dsh) 產生的 DeepSeek Harness **LLM adapter**。
 
 讓 harness 學會跟某一個 provider 對話。它宣告的路由是 `{{PLUGIN_ID}}`；指名該 provider 的模型請求
 就會落到這個 adapter。

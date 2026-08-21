@@ -1,4 +1,4 @@
-// Template registry + shared metadata for create-deepseek-harness-plugin.
+// Template registry + shared metadata for @allis-plugin/create-dsh.
 
 export const TEMPLATES = ['basic', 'tool', 'service', 'app', 'events', 'llm']
 
